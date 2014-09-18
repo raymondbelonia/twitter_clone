@@ -1,4 +1,4 @@
-# Ruby on Rails Tutorial: sample application (Twitter Cloe)
+# Ruby on Rails Tutorial: sample application (Twitter Clone)
 
 This is the sample application for
 [*Learn Web Development: The Ruby on Rails
