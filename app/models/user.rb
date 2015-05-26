@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  has_many :microposts, dependent: :destroy
   attr_accessor :remember_token, :activation_token, :reset_token
   before_save :downcase_email
   before_create :create_activation_digest
@@ -7,6 +8,11 @@ class User < ActiveRecord::Base
   validates :email, presence: true, length: { maximum: 255 }, format: { with: VALID_EMAIL_REGEX }, uniqueness: { case_sensitive: false }
   has_secure_password
   validates :password, length: { minimum: 6 }, allow_blank: true
+
+  # Defines a proto-feed
+  def feed
+    Micropost.where("user_id = ?", id)
+  end
 
   # Returns the hash digest of the given string.
   def User.digest(string)
@@ -48,7 +54,7 @@ class User < ActiveRecord::Base
 
   # Sends activation email.
   def send_activation_email
-    UserMailer.account_activation(self).deliver
+    UserMailer.account_activation(self).deliver_now
   end
 
   # Sets the password reset attributes.
@@ -61,7 +67,7 @@ class User < ActiveRecord::Base
 
   # Sends password reset email.
   def send_password_reset_email
-    UserMailer.password_reset(self).deliver
+    UserMailer.password_reset(self).deliver_now
   end
 
   # Returns true if a password reset has expired.
