@@ -16,7 +16,7 @@ class MicropostsInterfaceTest < ActionDispatch::IntegrationTest
   	end
   	assert_select 'div#error_explanation'
   	# Valid submission
-  	content = "This icropost really ties the room together"
+  	content = "This micropost really ties the room together"
   	assert_difference 'Micropost.count', 1 do 
   	  post microposts_path, micropost: { content: content }
   	end
@@ -32,5 +32,19 @@ class MicropostsInterfaceTest < ActionDispatch::IntegrationTest
   	# Visit a different user.
   	get user_path(users(:giselle))
   	assert_select 'a', text: 'delete', count: 0
+  end
+
+  test "micropost sidebar count" do 
+    log_in_as(@user)
+    get root_path
+    assert_match "#{@user.microposts.count} microposts", response.body
+    # User with zero microposts
+    other_user = users(:zero)
+    log_in_as(other_user)
+    get root_path
+    assert_match "0 microposts", response.body
+    other_user.microposts.create!(content: "a micropost")
+    get root_path
+    assert_match "1 micropost", response.body
   end
 end
